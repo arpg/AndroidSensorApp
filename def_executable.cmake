@@ -25,9 +25,6 @@ function(def_executable exec)
   set(${build_type_cache_var} "Release" CACHE STRING
     "Target specific build configuration for exec${exec}")
 
-  string(TOUPPER "${${build_type_cache_var}}" EXEC_BUILD_TYPE)
-  set(exec_flags "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS_${EXEC_BUILD_TYPE}} ${CMAKE_C_FLAGS_${EXEC_BUILD_TYPE}}")
-
   if(exec_CONDITIONS)
     foreach(cond ${exec_CONDITIONS})
       if(NOT ${cond})
@@ -50,7 +47,15 @@ function(def_executable exec)
 
   if(${cache_var})
     add_executable(${exec} ${exec_SOURCES})
-    set_target_properties(${exec} PROPERTIES COMPILE_FLAGS ${exec_flags})
+
+    string(TOUPPER "${${build_type_cache_var}}" EXEC_BUILD_TYPE)
+
+    # Only alter the compile flags if the build type is set
+    if(EXEC_BUILD_TYPE)
+      set(exec_flags "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS_${EXEC_BUILD_TYPE}} ${CMAKE_C_FLAGS_${EXEC_BUILD_TYPE}}")
+
+      set_target_properties(${exec} PROPERTIES COMPILE_FLAGS ${exec_flags})
+    endif()
 
     if(exec_DEPENDS)
       target_link_libraries(${exec} ${exec_DEPENDS})
