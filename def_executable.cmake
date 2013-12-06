@@ -53,11 +53,11 @@ function(def_executable exec)
     set_target_properties(${exec} PROPERTIES COMPILE_FLAGS ${exec_flags})
 
     if(exec_DEPENDS)
-      target_link_execraries(${exec} ${exec_DEPENDS})
+      target_link_libraries(${exec} ${exec_DEPENDS})
     endif()
 
     if(exec_LINK_LIBS)
-      target_link_execraries(${exec} ${exec_LINK_LIBS})
+      target_link_libraries(${exec} ${exec_LINK_LIBS})
     endif()
   endif()
 endfunction()
