@@ -22,7 +22,7 @@ function(def_library lib)
   set(${cache_var} ON CACHE BOOL "Enable ${LIB} compilation.")
 
   set(build_type_cache_var LIB${LIB}_BUILD_TYPE)
-  set(${build_type_cache_var} "" CACHE STRING
+  set(${build_type_cache_var} "Release" CACHE STRING
     "Target specific build configuration for lib${lib}")
 
   string(TOUPPER "${${build_type_cache_var}}" LIB_BUILD_TYPE)

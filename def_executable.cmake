@@ -22,7 +22,7 @@ function(def_executable exec)
   set(${cache_var} ON CACHE BOOL "Enable ${EXEC} compilation.")
 
   set(build_type_cache_var ${EXEC}_BUILD_TYPE)
-  set(${build_type_cache_var} "" CACHE STRING
+  set(${build_type_cache_var} "Release" CACHE STRING
     "Target specific build configuration for exec${exec}")
 
   string(TOUPPER "${${build_type_cache_var}}" EXEC_BUILD_TYPE)
