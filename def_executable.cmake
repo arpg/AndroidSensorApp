@@ -40,7 +40,6 @@ function(def_executable exec)
 
   if(exec_DEPENDS)
     foreach(dep ${exec_DEPENDS})
-      string(TOUPPER ${dep} DEP)
       if(NOT TARGET ${dep})
 	set(${cache_var} OFF)
 	message("${cache_var} is false because ${dep} is not being built.")

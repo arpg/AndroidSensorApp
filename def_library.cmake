@@ -40,7 +40,6 @@ function(def_library lib)
 
   if(lib_DEPENDS)
     foreach(dep ${lib_DEPENDS})
-      string(TOUPPER ${dep} DEP)
       if(NOT TARGET ${dep})
 	set(${cache_var} OFF)
 	message("${cache_var} is false because ${dep} is not being built.")

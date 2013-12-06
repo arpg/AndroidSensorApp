@@ -34,7 +34,6 @@ function(def_test test)
 
   if(test_DEPENDS)
     foreach(dep ${test_DEPENDS})
-      string(TOUPPER ${dep} DEP)
       if(NOT TARGET ${dep})
 	set(${cache_var} OFF)
 	message("${cache_var} is false because ${dep} is not being built.")
