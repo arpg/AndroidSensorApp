@@ -77,7 +77,7 @@ if(ANDROID AND NOT TARGET apk)
 void * load_lib(const char * l) {
     void * handle = dlopen(l, RTLD_NOW | RTLD_GLOBAL);
     if (!handle) {
-        LOGE( \"dlopen('%s'): %s\", l, strerror(errno) );
+        LOGE( \"dlopen('%s'): %s\", l, dlerror() );
     }
     return handle;
 }
