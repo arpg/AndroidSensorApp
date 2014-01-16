@@ -18,7 +18,7 @@ FIND_PATH(AndroidKernel_AV_INCLUDE_DIR
           NAMES camera/ICamera.h gestures/IGestureDevice.h media/IMediaPlayer.h
           PATHS ${AndroidKernel_POSSIBLE_ROOT_DIRS})
 FIND_PATH(AndroidKernel_NATIVE_INCLUDE_DIR
-          NAMES utils/Timers.h
+          NAMES gui/IGraphicBufferProducer.h
           PATHS ${AndroidKernel_POSSIBLE_ROOT_DIRS})
 FIND_PATH(AndroidKernel_HARDWARE_INCLUDE_DIR
           NAMES hardware/camera.h hardware/lights.h
