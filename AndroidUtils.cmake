@@ -85,7 +85,13 @@ void * load_lib(const char * l) {
 void ANativeActivity_onCreate(ANativeActivity * app, void * ud, size_t udsize) {
     #include \"${prog_name}_shared_load.h\"
     void (*main)(ANativeActivity*, void*, size_t);
-    *(void **) (&main) = dlsym(load_lib( LIB_PATH \"lib${prog_name}.so\"), \"ANativeActivity_onCreate\");
+    void* lib_handle = load_lib(LIB_PATH \"lib${prog_name}.so\");
+    if (!lib_handle) {
+        LOGE(\"Could not load library lib${prog_name}.so\");
+        exit(1);
+    }
+
+    *(void **) (&main) = dlsym(lib_handle, \"ANativeActivity_onCreate\");
     if (!main) {
         LOGE( \"undefined symbol ANativeActivity_onCreate\" );
         exit(1);
