@@ -32,6 +32,7 @@ if(ANDROID AND NOT TARGET apk)
 
     <!-- This is the platform API where NativeActivity was introduced. -->
     <uses-sdk android:minSdkVersion=\"14\" />
+    <uses-feature android:glEsVersion=\"0x00020000\"></uses-feature>
     <uses-feature android:name=\"android.hardware.camera\" />
     <uses-feature android:name=\"android.hardware.usb.host\" />
     <uses-permission android:name=\"android.permission.CAMERA\"/>

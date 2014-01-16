@@ -10,6 +10,7 @@ SET(AndroidKernel_POSSIBLE_ROOT_DIRS
     /kernel/frameworks/av/include
     /kernel/frameworks/native/include
     /kernel/system/core/include
+    /kernel/system/media/camera/include
     /kernel/hardware/libhardware/include
 )
 
@@ -25,12 +26,16 @@ FIND_PATH(AndroidKernel_HARDWARE_INCLUDE_DIR
 FIND_PATH(AndroidKernel_CORE_INCLUDE_DIR
           NAMES cutils/atomic.h
           PATHS ${AndroidKernel_POSSIBLE_ROOT_DIRS})
+FIND_PATH(AndroidKernel_CAMERA_INCLUDE_DIR
+          NAMES system/camera_metadata.h
+          PATHS ${AndroidKernel_POSSIBLE_ROOT_DIRS})
 
 SET(AndroidKernel_INCLUDE_DIRS
     ${AndroidKernel_AV_INCLUDE_DIR}
     ${AndroidKernel_NATIVE_INCLUDE_DIR}
     ${AndroidKernel_HARDWARE_INCLUDE_DIR}
     ${AndroidKernel_CORE_INCLUDE_DIR}
+    ${AndroidKernel_CAMERA_INCLUDE_DIR}
     )
 
 SET(AndroidKernel_LIBRARIES
@@ -52,6 +57,7 @@ MARK_AS_ADVANCED(FORCE
                  AndroidKernel_NATIVE_INCLUDE_DIR
                  AndroidKernel_HARDWARE_INCLUDE_DIR
                  AndroidKernel_CORE_INCLUDE_DIR
+		 AndroidKernel_CAMERA_INCLUDE_DIR
                  )
 
 IF(AndroidKernel_FOUND)
