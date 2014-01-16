@@ -4,6 +4,12 @@ endif()
 
 # Configure build environment to automatically generate APK's instead of executables.
 if(ANDROID AND NOT TARGET apk)
+  find_library(GNUSTL_SHARED_LIBRARY gnustl_shared)
+
+  if(NOT GNUSTL_SHARED_LIBRARY)
+    message(FATAL_ERROR "Could not find required GNU STL shared library.")
+  endif()
+
     # virtual targets which we'll add apks and push actions to.
     add_custom_target( apk )
     add_custom_target( push )
@@ -111,13 +117,58 @@ void ANativeActivity_onCreate(ANativeActivity * app, void * ud, size_t udsize) {
         )
     endmacro()
 
+    macro( package_with_target prog_name lib_path )
+        # Mark lib_path as dependent of prog_name
+        set_property(TARGET ${prog_name} APPEND PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE ${lib_path} )
+
+        # If prog_name is to be packaged, add file copy command to package .so's.
+        get_target_property( package_dependent_libs ${prog_name} MAKE_APK )
+        if( package_dependent_libs )
+            get_filename_component(target_filename ${lib_path} NAME)
+	  message(STATUS "package_with_target " ${target_filename} " - " ${depend_file} " - " ${prog_name})
+            file( APPEND ${depend_file} "load_lib(LIB_PATH \"${target_filename}\" );\n")
+            add_custom_command(TARGET ${prog_name} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${lib_path} "${CMAKE_CURRENT_BINARY_DIR}/libs/${ANDROID_NDK_ABI_NAME}/"
+            )
+        endif()
+    endmacro()
+
+    macro( add_to_depend_libs prog_name depend_file lib_name )
+        # Recursively Process dependents of lib_name
+        get_target_property(TARGET_LIBS ${lib_name} IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE)
+        if(NOT TARGET_LIBS)
+            get_target_property(TARGET_LIBS ${lib_name} IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)
+        endif()
+        if(NOT TARGET_LIBS)
+            get_target_property(TARGET_LIBS ${lib_name} IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG)
+        endif()
+
+        foreach(SUBLIB ${TARGET_LIBS})
+            if(SUBLIB)
+                add_to_depend_libs( ${prog_name} ${depend_file} ${SUBLIB} )
+            endif()
+        endforeach()
+
+        # Check if lib itself is an external shared library
+        if("${lib_name}" MATCHES "\\.so$")
+            package_with_target( ${prog_name} ${lib_name} )
+        endif()
+
+        # Check if lib itself is an internal shared library
+        get_target_property(TARGET_LIB ${lib_name} LOCATION)
+        if("${TARGET_LIB}" MATCHES "\\.so$")
+            package_with_target( ${prog_name} ${TARGET_LIB} )
+        endif()
+    endmacro()
+
     # Override add_executable to build android .so instead!
     macro( add_executable prog_name)
         set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libs/${ANDROID_NDK_ABI_NAME})
         add_library( ${prog_name} SHARED ${ARGN} )
 
         # Add required link libs for android
-        target_link_libraries(${prog_name} log android )
+        target_link_libraries(${prog_name} log android ${GNUSTL_SHARED_LIBRARY})
 
         # Create manifest required for APK
         create_android_manifest_xml(
@@ -165,51 +216,9 @@ void ANativeActivity_onCreate(ANativeActivity * app, void * ud, size_t udsize) {
         set_property(TARGET ${prog_name} APPEND PROPERTY MAKE_APK 1 )
 
         # Clear shared library loading header
-        file( WRITE "${CMAKE_CURRENT_BINARY_DIR}/${prog_name}_shared_load.h" "")
-    endmacro()
-
-    macro( package_with_target prog_name lib_path )
-        # Mark lib_path as dependent of prog_name
-        set_property(TARGET ${prog_name} APPEND PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE ${lib_path} )
-
-        # If prog_name is to be packaged, add file copy command to package .so's.
-        get_target_property( package_dependent_libs ${prog_name} MAKE_APK )
-        if( package_dependent_libs )
-            get_filename_component(target_filename ${lib_path} NAME)
-            file( APPEND ${depend_file} "load_lib(LIB_PATH \"${target_filename}\" );\n")
-            add_custom_command(TARGET ${prog_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${lib_path} "${CMAKE_CURRENT_BINARY_DIR}/libs/${ANDROID_NDK_ABI_NAME}/"
-            )
-        endif()
-    endmacro()
-
-    macro( add_to_depend_libs prog_name depend_file lib_name )
-        # Recursively Process dependents of lib_name
-        get_target_property(TARGET_LIBS ${lib_name} IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE)
-        if(NOT TARGET_LIBS)
-            get_target_property(TARGET_LIBS ${lib_name} IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)
-        endif()
-        if(NOT TARGET_LIBS)
-            get_target_property(TARGET_LIBS ${lib_name} IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG)
-        endif()
-
-        foreach(SUBLIB ${TARGET_LIBS})
-            if(SUBLIB)
-                add_to_depend_libs( ${prog_name} ${depend_file} ${SUBLIB} )
-            endif()
-        endforeach()
-
-        # Check if lib itself is an external shared library
-        if("${lib_name}" MATCHES "\\.so$")
-            package_with_target( ${prog_name} ${lib_name} )
-        endif()
-
-        # Check if lib itself is an internal shared library
-        get_target_property(TARGET_LIB ${lib_name} LOCATION)
-        if("${TARGET_LIB}" MATCHES "\\.so$")
-            package_with_target( ${prog_name} ${TARGET_LIB} )
-        endif()
+        set(depend_file "${CMAKE_CURRENT_BINARY_DIR}/${prog_name}_shared_load.h")
+        file(WRITE "${depend_file}")
+	add_to_depend_libs("${prog_name}" "${depend_file}" "${GNUSTL_SHARED_LIBRARY}")	
     endmacro()
 
     macro( target_link_libraries prog_name)
@@ -222,5 +231,4 @@ void ANativeActivity_onCreate(ANativeActivity * app, void * ud, size_t udsize) {
             add_to_depend_libs( ${prog_name} ${depend_file} ${LIB} )
         endforeach()
     endmacro()
-
 endif()
