@@ -126,7 +126,6 @@ void ANativeActivity_onCreate(ANativeActivity * app, void * ud, size_t udsize) {
         get_target_property( package_dependent_libs ${prog_name} MAKE_APK )
         if( package_dependent_libs )
             get_filename_component(target_filename ${lib_path} NAME)
-	  message(STATUS "package_with_target " ${target_filename} " - " ${depend_file} " - " ${prog_name})
             file( APPEND ${depend_file} "load_lib(LIB_PATH \"${target_filename}\" );\n")
             add_custom_command(TARGET ${prog_name} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
