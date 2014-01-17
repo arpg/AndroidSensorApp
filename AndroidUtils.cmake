@@ -4,12 +4,6 @@ endif()
 
 # Configure build environment to automatically generate APK's instead of executables.
 if(ANDROID AND NOT TARGET apk)
-  find_library(GNUSTL_SHARED_LIBRARY gnustl_shared)
-
-  if(NOT GNUSTL_SHARED_LIBRARY)
-    message(FATAL_ERROR "Could not find required GNU STL shared library.")
-  endif()
-
     # virtual targets which we'll add apks and push actions to.
     add_custom_target( apk )
     add_custom_target( push )
@@ -168,7 +162,7 @@ void ANativeActivity_onCreate(ANativeActivity * app, void * ud, size_t udsize) {
         add_library( ${prog_name} SHARED ${ARGN} )
 
         # Add required link libs for android
-        target_link_libraries(${prog_name} log android ${GNUSTL_SHARED_LIBRARY})
+        target_link_libraries(${prog_name} log android)
 
         # Create manifest required for APK
         create_android_manifest_xml(
@@ -218,7 +212,6 @@ void ANativeActivity_onCreate(ANativeActivity * app, void * ud, size_t udsize) {
         # Clear shared library loading header
         set(depend_file "${CMAKE_CURRENT_BINARY_DIR}/${prog_name}_shared_load.h")
         file(WRITE "${depend_file}")
-	add_to_depend_libs("${prog_name}" "${depend_file}" "${GNUSTL_SHARED_LIBRARY}")	
     endmacro()
 
     macro( target_link_libraries prog_name)
