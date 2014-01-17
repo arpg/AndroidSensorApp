@@ -162,7 +162,8 @@ void ANativeActivity_onCreate(ANativeActivity * app, void * ud, size_t udsize) {
         add_library( ${prog_name} SHARED ${ARGN} )
 
         # Add required link libs for android
-        target_link_libraries(${prog_name} log android)
+        target_link_libraries(${prog_name} log android -pthread
+	  -Wl,--gc-sections -Wl,--whole-archive libsupc++.a -Wl,--no-whole-archive)
 
         # Create manifest required for APK
         create_android_manifest_xml(
