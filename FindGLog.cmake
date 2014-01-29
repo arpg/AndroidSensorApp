@@ -10,6 +10,6 @@ find_path(GLog_INCLUDE_DIR NAMES glog/logging.h)
 find_library(GLog_LIBRARIES NAMES glog)
 
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(GLOG_FOUND GLog_INCLUDE_DIR GLog_LIBRARIES)
+find_package_handle_standard_args(GLog DEFAULT_MSG GLog_INCLUDE_DIR GLog_LIBRARIES)
 set(GLOG_INCLUDE_DIRS ${GLog_INCLUDE_DIRS})
 set(GLOG_LIBRARIES ${GLog_LIBRARIES})
