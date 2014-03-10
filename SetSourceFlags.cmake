@@ -6,7 +6,6 @@ function(set_source_flags src_file build_type)
   elseif("${SRC_LANG}" STREQUAL C)
     set(src_file_flags "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${build_type}}")
   else()
-    message("Could not set COMPILE_FLAGS for ${src_file}. Unknown LANGUAGE")
     return()
   endif()
 
