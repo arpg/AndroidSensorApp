@@ -1,4 +1,5 @@
 include(CMakeParseArguments)
+include(SetSourceFlags)
 
 function(def_library lib)
 
@@ -56,8 +57,9 @@ function(def_library lib)
 
     # Only alter the compile flags if the build type is set
     if (LIB_BUILD_TYPE)
-      set(lib_flags "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS_${LIB_BUILD_TYPE}} ${CMAKE_C_FLAGS_${LIB_BUILD_TYPE}}")
-      set_target_properties(${lib} PROPERTIES COMPILE_FLAGS ${lib_flags})
+      foreach(src_file ${lib_SOURCES})
+	set_source_flags("${src_file}" "${LIB_BUILD_TYPE}")
+      endforeach()
     endif()
 
     if(lib_DEPENDS)

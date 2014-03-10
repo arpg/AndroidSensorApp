@@ -1,4 +1,5 @@
 include(CMakeParseArguments)
+include(SetSourceFlags)
 
 function(def_executable exec)
 
@@ -52,9 +53,9 @@ function(def_executable exec)
 
     # Only alter the compile flags if the build type is set
     if(EXEC_BUILD_TYPE)
-      set(exec_flags "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS_${EXEC_BUILD_TYPE}} ${CMAKE_C_FLAGS_${EXEC_BUILD_TYPE}}")
-
-      set_target_properties(${exec} PROPERTIES COMPILE_FLAGS ${exec_flags})
+      foreach(src_file ${exec_SOURCES})
+	set_source_flags("${src_file}" "${EXEC_BUILD_TYPE}")
+      endforeach()
     endif()
 
     if(exec_DEPENDS)
