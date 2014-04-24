@@ -21,12 +21,6 @@ public class NativeSensorInterface {
 
     static {
         System.loadLibrary("gnustl_shared");
-        System.loadLibrary("opencv_java");
-        System.loadLibrary("pbmsgs");
-        System.loadLibrary("miniglog");
-        System.loadLibrary("node");
-        System.loadLibrary("calibu");
-        System.loadLibrary("hal");
         System.loadLibrary("NativeSensorInterface");
     }
 }

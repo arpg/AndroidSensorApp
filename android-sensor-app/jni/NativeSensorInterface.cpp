@@ -1,7 +1,7 @@
 #include <jni.h>
 
 extern "C" {
-  JNIEXPORT void JNICALL Java_edu_gwu_rpg_nativesensorinterface_NativeSensorInterface_post_image
+  JNIEXPORT void JNICALL Java_edu_gwu_rpg_nativesensorinterface_NativeSensorInterface_post_1image
   (JNIEnv *env, jobject jobj, jbyteArray bytes)
   {
     int len = env->GetArrayLength(bytes);
