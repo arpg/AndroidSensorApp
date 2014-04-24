@@ -11,8 +11,6 @@ public class NativeCameraInterface implements SurfaceHolder.Callback {
     public NativeCameraInterface(NativeSensorInterface nativeInterface) {
         mNativeInterface = nativeInterface;
         mCamera = Camera.open();
-        mCamera.setDisplayOrientation(90);
-
         mCamera.setPreviewCallback(new Camera.PreviewCallback() {
                 @Override
                 public void onPreviewFrame(byte[] data, Camera camera) {
