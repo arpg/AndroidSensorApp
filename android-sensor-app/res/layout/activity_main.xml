@@ -8,10 +8,10 @@
 		android:paddingTop="@dimen/activity_vertical_margin"
 		tools:context=".MainActivity" >
 
-  <SurfaceView
+  <TextureView
       android:id="@+id/preview"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
+      android:layout_width="640px"
+      android:layout_height="480px"
       android:layout_above="@+id/button1"
       android:layout_below="@+id/textView1" />
 </RelativeLayout>

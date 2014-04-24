@@ -12,10 +12,10 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
+import android.util.Log;
 
 public class MainActivity extends Activity {
-
-    private SurfaceView mPreview;
     private NativeCameraInterface mCamera;
     private NativeSensorInterface mNativeInterface;
 
@@ -25,10 +25,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         mNativeInterface = new NativeSensorInterface();
-        mCamera = new NativeCameraInterface(mNativeInterface);
-        mPreview = (SurfaceView)findViewById(R.id.preview);
-        mPreview.getHolder().addCallback(mCamera);
-        mPreview.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        mNativeInterface.Initialize(this);
+        TextureView texture = (TextureView)findViewById(R.id.preview);
+        mCamera = new NativeCameraInterface(mNativeInterface, texture);
     }
 
     @Override
