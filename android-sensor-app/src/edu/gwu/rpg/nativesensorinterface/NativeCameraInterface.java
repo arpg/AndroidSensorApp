@@ -58,8 +58,6 @@ public class NativeCameraInterface
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        // mCamera.stopPreview();
-        // mCamera.release();
         return true;
     }
 
