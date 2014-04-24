@@ -1,3 +1,4 @@
+include(CMakeParseArguments)
 # Declare an APK w/
 #   - LINK_LIBS: Library dependencies for NDK lib
 #   - DEPENDS: Targets to link against and depend on
