@@ -159,5 +159,7 @@ function(def_apk apk)
 
     apk_type(debug)
     apk_type(release)
+
+    add_custom_target(${apk} ALL DEPENDS ${apk}-debug)
   endif()
 endfunction()
