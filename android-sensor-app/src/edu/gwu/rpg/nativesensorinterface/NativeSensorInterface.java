@@ -31,14 +31,14 @@ public class NativeSensorInterface {
      * SensorEvent/SurfaceTexture timestamps as purely relative
      * increases over the elapsedRealtimeNanos().
      */
-    private boolean mHasInitialSensorEvent, mHasInitialImage;
-    private long mInitialSensorTimestamp, mInitialImageTimestamp;
-    private long mRealSensorTime, mRealImageTime, mRealTimeDiff;
+    private boolean mHasInitialSensorEvent;
+    private long mInitialSensorTimestamp;
+    private long mRealSensorTime, mRealTimeDiff;
 
     /** Initialize all the listeners */
     public void Initialize(Context ctx) {
         initialize();
-        mHasInitialImage = mHasInitialSensorEvent = false;
+        mHasInitialSensorEvent = false;
 
         mSensorManager =
                 (SensorManager) ctx.getSystemService(Context.SENSOR_SERVICE);
@@ -85,13 +85,7 @@ public class NativeSensorInterface {
     }
 
     public void PostImage(long timestamp, byte[] bytes) {
-        if (!mHasInitialImage) {
-            mHasInitialImage = true;
-            mInitialImageTimestamp = timestamp;
-            mRealImageTime = SystemClock.elapsedRealtimeNanos();
-        }
-        post_image(timestamp - mInitialImageTimestamp + mRealImageTime,
-                   bytes);
+        post_image(timestamp, bytes);
     }
 
     static {

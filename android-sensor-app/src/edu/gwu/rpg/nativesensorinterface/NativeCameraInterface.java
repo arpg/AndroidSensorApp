@@ -5,6 +5,7 @@ import java.io.IOException;
 import android.content.Context;
 import android.hardware.Camera;
 import android.graphics.SurfaceTexture;
+import android.os.SystemClock;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
 import android.util.Log;
@@ -15,9 +16,12 @@ public class NativeCameraInterface
     private NativeSensorInterface mNativeInterface;
     private TextureView mTextureView;
     private long mTimestamp;
+    private boolean mHasInitialImage;
+    private long mInitialTimestamp, mRealImageTime;
 
     public NativeCameraInterface(NativeSensorInterface nativeInterface,
                                  TextureView textureView) {
+        mHasInitialImage = false;
         mTimestamp = 0;
         mNativeInterface = nativeInterface;
         mTextureView = textureView;
@@ -27,8 +31,7 @@ public class NativeCameraInterface
         mCamera.setPreviewCallback(new Camera.PreviewCallback() {
                 @Override
                 public void onPreviewFrame(byte[] data, Camera camera) {
-                    mNativeInterface.PostImage(mTimestamp,
-                                               data);
+                    mNativeInterface.PostImage(mTimestamp, data);
                 }
             });
     }
@@ -63,6 +66,12 @@ public class NativeCameraInterface
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-        mTimestamp = surface.getTimestamp();
+        if (!mHasInitialImage) {
+            mHasInitialImage = true;
+            mInitialTimestamp = surface.getTimestamp();
+            mRealImageTime = SystemClock.elapsedRealtimeNanos();
+        }
+        mTimestamp =
+            surface.getTimestamp() - mInitialTimestamp + mRealImageTime;
     }
 }
