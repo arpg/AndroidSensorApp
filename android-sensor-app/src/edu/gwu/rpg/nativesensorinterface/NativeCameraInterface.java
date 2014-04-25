@@ -31,7 +31,7 @@ public class NativeCameraInterface
         mCamera.setPreviewCallback(new Camera.PreviewCallback() {
                 @Override
                 public void onPreviewFrame(byte[] data, Camera camera) {
-                    mNativeInterface.PostImage(mTimestamp, data);
+                    mNativeInterface.postImage(mTimestamp, data);
                 }
             });
     }

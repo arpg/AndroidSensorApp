@@ -34,9 +34,10 @@ public class NativeSensorInterface {
     private boolean mHasInitialSensorEvent;
     private long mInitialSensorTimestamp;
     private long mRealSensorTime, mRealTimeDiff;
+    private SensorEventListener mGyroListener, mAccelListener;
 
     /** Initialize all the listeners */
-    public void Initialize(Context ctx) {
+    public void initialize(Context ctx) {
         initialize();
         mHasInitialSensorEvent = false;
 
@@ -47,44 +48,55 @@ public class NativeSensorInterface {
         mGyroSensor =
                 mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
-        mSensorManager.registerListener(new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                if (!mHasInitialSensorEvent) {
-                    mHasInitialSensorEvent = true;
-                    mInitialSensorTimestamp = event.timestamp;
-                    mRealSensorTime = SystemClock.elapsedRealtimeNanos();
+        mAccelListener = new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    if (!mHasInitialSensorEvent) {
+                        mHasInitialSensorEvent = true;
+                        mInitialSensorTimestamp = event.timestamp;
+                        mRealSensorTime = SystemClock.elapsedRealtimeNanos();
+                    }
+
+                    post_accel(event.timestamp - mInitialSensorTimestamp +
+                               mRealSensorTime,
+                               event.values[0], event.values[1], event.values[2]);
                 }
 
-                post_accel(event.timestamp - mInitialSensorTimestamp +
-                           mRealSensorTime,
-                           event.values[0], event.values[1], event.values[2]);
-            }
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+            };
 
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-        }, mAccelSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        mGyroListener = new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    if (!mHasInitialSensorEvent) {
+                        mHasInitialSensorEvent = true;
+                        mInitialSensorTimestamp = event.timestamp;
+                        mRealSensorTime = SystemClock.elapsedRealtimeNanos();
+                    }
 
-        mSensorManager.registerListener(new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                if (!mHasInitialSensorEvent) {
-                    mHasInitialSensorEvent = true;
-                    mInitialSensorTimestamp = event.timestamp;
-                    mRealSensorTime = SystemClock.elapsedRealtimeNanos();
+                    post_gyro(event.timestamp - mInitialSensorTimestamp +
+                              mRealSensorTime,
+                              event.values[0], event.values[1], event.values[2]);
                 }
 
-                post_gyro(event.timestamp - mInitialSensorTimestamp +
-                          mRealSensorTime,
-                          event.values[0], event.values[1], event.values[2]);
-            }
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+            };
 
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-        }, mGyroSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        mSensorManager.registerListener(mAccelListener, mAccelSensor,
+                                        SensorManager.SENSOR_DELAY_FASTEST);
+
+        mSensorManager.registerListener(mGyroListener, mGyroSensor,
+                                        SensorManager.SENSOR_DELAY_FASTEST);
     }
 
-    public void PostImage(long timestamp, byte[] bytes) {
+    public void stop() {
+        mSensorManager.unregisterListener(mAccelListener);
+        mSensorManager.unregisterListener(mGyroListener);
+    }
+
+    public void postImage(long timestamp, byte[] bytes) {
         post_image(timestamp, bytes);
     }
 
