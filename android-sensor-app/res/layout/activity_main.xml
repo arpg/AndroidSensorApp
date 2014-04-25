@@ -1,17 +1,37 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:tools="http://schemas.android.com/tools"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:paddingBottom="@dimen/activity_vertical_margin"
-		android:paddingLeft="@dimen/activity_horizontal_margin"
-		android:paddingRight="@dimen/activity_horizontal_margin"
-		android:paddingTop="@dimen/activity_vertical_margin"
-		tools:context=".MainActivity" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	      xmlns:tools="http://schemas.android.com/tools"
+	      android:layout_width="fill_parent"
+	      android:layout_height="fill_parent"
+	      android:orientation="horizontal"
+	      android:paddingBottom="@dimen/activity_vertical_margin"
+	      android:paddingLeft="@dimen/activity_horizontal_margin"
+	      android:paddingRight="@dimen/activity_horizontal_margin"
+	      android:paddingTop="@dimen/activity_vertical_margin"
+	      tools:context=".MainActivity" >
 
   <TextureView
       android:id="@+id/preview"
-      android:layout_width="640px"
-      android:layout_height="480px"
-      android:layout_above="@+id/button1"
-      android:layout_below="@+id/textView1" />
-</RelativeLayout>
+      android:layout_width="320px"
+      android:layout_height="240px" />
+  <!-- <GLSurfaceView -->
+  <!--     android:id="@+id/canvas" -->
+  <!--     android:layout_width="100dip" -->
+  <!--     android:layout_height="100dip" /> -->
+
+  <LinearLayout android:orientation="vertical"
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent" >
+    <TextView android:id="@+id/image_text"
+	      android:layout_width="wrap_content"
+	      android:layout_height="wrap_content" />
+    <TextView android:id="@+id/accel_text"
+	      android:layout_width="wrap_content"
+	      android:layout_height="wrap_content" />
+    <TextView android:id="@+id/gyro_text"
+	      android:layout_width="wrap_content"
+	      android:layout_height="wrap_content" />
+    <TextView android:id="@+id/gps_text"
+	      android:layout_width="wrap_content"
+	      android:layout_height="wrap_content" />
+  </LinearLayout>
+</LinearLayout>

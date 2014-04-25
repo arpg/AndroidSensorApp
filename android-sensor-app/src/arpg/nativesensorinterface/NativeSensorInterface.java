@@ -10,6 +10,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
+import android.widget.TextView;
 
 /** The class for handling all JNI data interchange
  *
@@ -46,6 +48,11 @@ public class NativeSensorInterface {
     private long mRealSensorTime, mRealTimeDiff;
     private SensorEventListener mGyroListener, mAccelListener;
     private LocationListener mLocationListener;
+    private TextView mGpsText, mGyroText, mAccelText, mImageText;
+
+    public NativeSensorInterface() {
+        mGpsText = mGyroText = mAccelText = mImageText = null;
+    }
 
     /** Initialize all the listeners */
     public void initialize(Context ctx) {
@@ -53,14 +60,14 @@ public class NativeSensorInterface {
         mHasInitialSensorEvent = false;
 
         mSensorManager =
-                (SensorManager) ctx.getSystemService(Context.SENSOR_SERVICE);
+            (SensorManager) ctx.getSystemService(Context.SENSOR_SERVICE);
         mLocationManager =
             (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
 
         mAccelSensor =
-                mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mGyroSensor =
-                mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+            mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
         mAccelListener = new SensorEventListener() {
                 @Override
@@ -71,9 +78,19 @@ public class NativeSensorInterface {
                         mRealSensorTime = SystemClock.elapsedRealtimeNanos();
                     }
 
-                    post_accel(event.timestamp - mInitialSensorTimestamp +
-                               mRealSensorTime,
-                               event.values[0], event.values[1], event.values[2]);
+                    long ts = event.timestamp - mInitialSensorTimestamp +
+                        mRealSensorTime;
+
+                    if (mAccelText != null) {
+                        mAccelText.setText(String.format("Accel at %d (%.2f, %.2f, %.2f)",
+                                                         ts,
+                                                         event.values[0],
+                                                         event.values[1],
+                                                         event.values[2]));
+                    }
+
+                    post_accel(ts, event.values[0],
+                               event.values[1], event.values[2]);
                 }
 
                 @Override
@@ -89,9 +106,18 @@ public class NativeSensorInterface {
                         mRealSensorTime = SystemClock.elapsedRealtimeNanos();
                     }
 
-                    post_gyro(event.timestamp - mInitialSensorTimestamp +
-                              mRealSensorTime,
-                              event.values[0], event.values[1], event.values[2]);
+                    long ts = event.timestamp - mInitialSensorTimestamp +
+                        mRealSensorTime;
+                    if (mGyroText != null) {
+                        mGyroText.setText(String.format("Gyro at %d (%.2f, %.2f, %.2f)",
+                                                        ts,
+                                                        event.values[0],
+                                                        event.values[1],
+                                                        event.values[2]));
+                    }
+
+                    post_gyro(ts, event.values[0], event.values[1],
+                              event.values[2]);
                 }
 
                 @Override
@@ -101,6 +127,17 @@ public class NativeSensorInterface {
         mLocationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location loc) {
+                    if (mAccelText != null) {
+                        String gpsStr =
+                            "GPS at %d (%.2f, %.2f, %.2f) +/- %.2f";
+                        mAccelText.setText(String.format(gpsStr,
+                                                         loc.getElapsedRealtimeNanos(),
+                                                         loc.getLatitude(),
+                                                         loc.getLongitude(),
+                                                         loc.getAltitude(),
+                                                         loc.getAccuracy()));
+                    }
+
                     post_gps(loc.getElapsedRealtimeNanos(),
                              loc.getLatitude(),
                              loc.getLongitude(),
@@ -132,6 +169,14 @@ public class NativeSensorInterface {
                                         SensorManager.SENSOR_DELAY_FASTEST);
     }
 
+    public void setTextViews(TextView gpsText, TextView gyroText,
+                             TextView accelText, TextView imageText) {
+        mGpsText = gpsText;
+        mGyroText = gyroText;
+        mAccelText = accelText;
+        mImageText = imageText;
+    }
+
     public void stop() {
         mSensorManager.unregisterListener(mAccelListener);
         mSensorManager.unregisterListener(mGyroListener);
@@ -140,6 +185,10 @@ public class NativeSensorInterface {
 
     public void postImage(long timestamp, byte[] bytes) {
         post_image(timestamp, bytes);
+
+        if (mImageText != null) {
+            mImageText.setText("Image at " + Long.toString(timestamp));
+        }
     }
 
     static {

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
+import android.widget.TextView;
 import android.util.Log;
 
 public class MainActivity extends Activity {
@@ -28,6 +29,11 @@ public class MainActivity extends Activity {
         mNativeInterface.initialize(this);
         TextureView texture = (TextureView)findViewById(R.id.preview);
         mCamera = new NativeCameraInterface(mNativeInterface, texture);
+
+        mNativeInterface.setTextViews((TextView)findViewById(R.id.gps_text),
+                                      (TextView)findViewById(R.id.gyro_text),
+                                      (TextView)findViewById(R.id.accel_text),
+                                      (TextView)findViewById(R.id.image_text));
     }
 
     @Override
