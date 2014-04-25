@@ -5,6 +5,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.SystemClock;
 
 /** The class for handling all JNI data interchange
@@ -19,8 +23,14 @@ public class NativeSensorInterface {
     private native void post_image(long timestamp, byte[] bytes);
     private native void post_accel(long timestamp, float x, float y, float z);
     private native void post_gyro(long timestamp, float x, float y, float z);
+    private native void post_gps(long timestamp, double lat, double lon,
+                                 double alt, float std);
+
+    private static final long MILLIS_BETWEEN_GPS_UPDATES = 1000 * 5; // 5 sec
+    private static final long METERS_BETWEEN_GPS_UPDATES = 5; // 5 meters
 
     private SensorManager mSensorManager;
+    private LocationManager mLocationManager;
     private Sensor mAccelSensor, mGyroSensor;
 
     /** We need to scale our timestamps to be in the same world
@@ -35,6 +45,7 @@ public class NativeSensorInterface {
     private long mInitialSensorTimestamp;
     private long mRealSensorTime, mRealTimeDiff;
     private SensorEventListener mGyroListener, mAccelListener;
+    private LocationListener mLocationListener;
 
     /** Initialize all the listeners */
     public void initialize(Context ctx) {
@@ -43,6 +54,9 @@ public class NativeSensorInterface {
 
         mSensorManager =
                 (SensorManager) ctx.getSystemService(Context.SENSOR_SERVICE);
+        mLocationManager =
+            (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+
         mAccelSensor =
                 mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mGyroSensor =
@@ -84,6 +98,33 @@ public class NativeSensorInterface {
                 public void onAccuracyChanged(Sensor sensor, int accuracy) {}
             };
 
+        mLocationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location loc) {
+                    post_gps(loc.getElapsedRealtimeNanos(),
+                             loc.getLatitude(),
+                             loc.getLongitude(),
+                             loc.getAltitude(),
+                             loc.getAccuracy());
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {}
+
+                @Override
+                public void onProviderEnabled(String provider) {}
+
+                @Override
+                public void onStatusChanged(String provider, int status,
+                                            Bundle extras) {}
+
+            };
+
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                                                MILLIS_BETWEEN_GPS_UPDATES,
+                                                METERS_BETWEEN_GPS_UPDATES,
+                                                mLocationListener);
+
         mSensorManager.registerListener(mAccelListener, mAccelSensor,
                                         SensorManager.SENSOR_DELAY_FASTEST);
 
@@ -94,6 +135,7 @@ public class NativeSensorInterface {
     public void stop() {
         mSensorManager.unregisterListener(mAccelListener);
         mSensorManager.unregisterListener(mGyroListener);
+        mLocationManager.removeUpdates(mLocationListener);
     }
 
     public void postImage(long timestamp, byte[] bytes) {
