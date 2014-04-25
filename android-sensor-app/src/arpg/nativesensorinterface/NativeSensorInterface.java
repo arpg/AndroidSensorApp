@@ -127,15 +127,15 @@ public class NativeSensorInterface {
         mLocationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location loc) {
-                    if (mAccelText != null) {
+                    if (mGpsText != null) {
                         String gpsStr =
                             "GPS at %d (%.2f, %.2f, %.2f) +/- %.2f";
-                        mAccelText.setText(String.format(gpsStr,
-                                                         loc.getElapsedRealtimeNanos(),
-                                                         loc.getLatitude(),
-                                                         loc.getLongitude(),
-                                                         loc.getAltitude(),
-                                                         loc.getAccuracy()));
+                        mGpsText.setText(String.format(gpsStr,
+                                                       loc.getElapsedRealtimeNanos(),
+                                                       loc.getLatitude(),
+                                                       loc.getLongitude(),
+                                                       loc.getAltitude(),
+                                                       loc.getAccuracy()));
                     }
 
                     post_gps(loc.getElapsedRealtimeNanos(),
@@ -189,10 +189,5 @@ public class NativeSensorInterface {
         if (mImageText != null) {
             mImageText.setText("Image at " + Long.toString(timestamp));
         }
-    }
-
-    static {
-        System.loadLibrary("gnustl_shared");
-        System.loadLibrary("NativeSensorInterface");
     }
 }

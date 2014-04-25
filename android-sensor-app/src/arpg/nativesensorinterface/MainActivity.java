@@ -10,6 +10,7 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.opengl.GLSurfaceView;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
@@ -19,11 +20,17 @@ import android.util.Log;
 public class MainActivity extends Activity {
     private NativeCameraInterface mCamera;
     private NativeSensorInterface mNativeInterface;
+    private NativeOpenGLRenderer mRenderer;
+    private GLSurfaceView mGlSurface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mRenderer = new NativeOpenGLRenderer();
+        mGlSurface = (GLSurfaceView)findViewById(R.id.canvas);
+        mGlSurface.setRenderer(mRenderer);
 
         mNativeInterface = new NativeSensorInterface();
         mNativeInterface.initialize(this);
@@ -41,11 +48,18 @@ public class MainActivity extends Activity {
         super.onPause();
         mCamera.stop();
         mNativeInterface.stop();
+        mRenderer.stop();
+        mGlSurface.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mCamera.close();
+    }
+
+    static {
+        System.loadLibrary("gnustl_shared");
+        System.loadLibrary("ARPGNativeInterface");
     }
 }

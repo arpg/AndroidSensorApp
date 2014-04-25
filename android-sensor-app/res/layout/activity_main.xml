@@ -13,10 +13,10 @@
       android:id="@+id/preview"
       android:layout_width="320px"
       android:layout_height="240px" />
-  <!-- <GLSurfaceView -->
-  <!--     android:id="@+id/canvas" -->
-  <!--     android:layout_width="100dip" -->
-  <!--     android:layout_height="100dip" /> -->
+  <android.opengl.GLSurfaceView
+      android:id="@+id/canvas"
+      android:layout_width="100px"
+      android:layout_height="100px" />
 
   <LinearLayout android:orientation="vertical"
 		android:layout_width="wrap_content"
