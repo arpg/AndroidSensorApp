@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         mNativeInterface = new NativeSensorInterface();
-        mNativeInterface.Initialize(this);
+        mNativeInterface.initialize(this);
         TextureView texture = (TextureView)findViewById(R.id.preview);
         mCamera = new NativeCameraInterface(mNativeInterface, texture);
     }
@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
     public void onPause() {
         super.onPause();
         mCamera.stop();
+        mNativeInterface.stop();
     }
 
     @Override
