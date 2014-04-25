@@ -4,13 +4,13 @@
 
 extern "C" {
   JNIEXPORT void JNICALL
-  Java_edu_gwu_rpg_nativesensorinterface_NativeSensorInterface_initialize
+  Java_arpg_nativesensorinterface_NativeSensorInterface_initialize
   (JNIEnv *env, jobject jobj)
   {
   }
 
   JNIEXPORT void JNICALL
-  Java_edu_gwu_rpg_nativesensorinterface_NativeSensorInterface_post_1image
+  Java_arpg_nativesensorinterface_NativeSensorInterface_post_1image
   (JNIEnv *env, jobject jobj, jlong timestamp, jbyteArray bytes)
   {
     int len = env->GetArrayLength(bytes);
@@ -27,7 +27,7 @@ extern "C" {
   }
 
   JNIEXPORT void JNICALL
-  Java_edu_gwu_rpg_nativesensorinterface_NativeSensorInterface_post_1accel
+  Java_arpg_nativesensorinterface_NativeSensorInterface_post_1accel
   (JNIEnv *env, jobject jobj, jlong timestamp, jfloat x, jfloat y, jfloat z)
   {
     __android_log_print(ANDROID_LOG_INFO, "nativesensorinterface",
@@ -39,7 +39,7 @@ extern "C" {
   }
 
   JNIEXPORT void JNICALL
-  Java_edu_gwu_rpg_nativesensorinterface_NativeSensorInterface_post_1gyro
+  Java_arpg_nativesensorinterface_NativeSensorInterface_post_1gyro
   (JNIEnv *env, jobject jobj, jlong timestamp, jfloat x, jfloat y, jfloat z)
   {
     __android_log_print(ANDROID_LOG_INFO, "nativesensorinterface",
@@ -51,7 +51,7 @@ extern "C" {
   }
 
   JNIEXPORT void JNICALL
-  Java_edu_gwu_rpg_nativesensorinterface_NativeSensorInterface_post_1gps
+  Java_arpg_nativesensorinterface_NativeSensorInterface_post_1gps
   (JNIEnv *env, jobject jobj, jlong timestamp, jdouble lat, jdouble lon,
    jdouble alt, jfloat std)
   {

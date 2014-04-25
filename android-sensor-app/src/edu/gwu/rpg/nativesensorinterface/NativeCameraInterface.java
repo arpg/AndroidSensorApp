@@ -1,4 +1,4 @@
-package edu.gwu.rpg.nativesensorinterface;
+package arpg.nativesensorinterface;
 
 import java.io.IOException;
 
