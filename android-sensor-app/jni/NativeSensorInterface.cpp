@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <jni.h>
-#include <android/Log.h>
+#include <android/log.h>
 
 extern "C" {
   JNIEXPORT void JNICALL
