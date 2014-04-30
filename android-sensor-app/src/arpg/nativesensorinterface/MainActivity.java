@@ -40,7 +40,8 @@ public class MainActivity extends Activity {
         mNativeInterface.setTextViews((TextView)findViewById(R.id.gps_text),
                                       (TextView)findViewById(R.id.gyro_text),
                                       (TextView)findViewById(R.id.accel_text),
-                                      (TextView)findViewById(R.id.image_text));
+                                      (TextView)findViewById(R.id.image_text),
+                                      (TextView)findViewById(R.id.mag_text));
     }
 
     @Override

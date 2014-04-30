@@ -51,6 +51,18 @@ extern "C" {
   }
 
   JNIEXPORT void JNICALL
+  Java_arpg_nativesensorinterface_NativeSensorInterface_post_1mag
+  (JNIEnv *env, jobject jobj, jlong timestamp, jfloat x, jfloat y, jfloat z)
+  {
+    __android_log_print(ANDROID_LOG_INFO, "nativesensorinterface",
+                        "Got mag data at %lld: (%f, %f, %f)",
+                        static_cast<int64_t>(timestamp),
+                        static_cast<float>(x),
+                        static_cast<float>(y),
+                        static_cast<float>(z));
+  }
+
+  JNIEXPORT void JNICALL
   Java_arpg_nativesensorinterface_NativeSensorInterface_post_1gps
   (JNIEnv *env, jobject jobj, jlong timestamp, jdouble lat, jdouble lon,
    jdouble alt, jfloat std)
